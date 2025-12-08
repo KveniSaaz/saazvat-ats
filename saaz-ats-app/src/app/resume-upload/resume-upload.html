@@ -1,0 +1,59 @@
+<div class="resume-checker-container">
+
+  <h2 class="title">HR ATS Resume Checker</h2>
+
+  <div class="p-fluid form-wrapper">
+
+    <!-- Job Description -->
+    <div class="p-field">
+      <label for="jd">Job Description</label>
+      <textarea
+        id="jd"
+        pInputTextarea
+        
+        rows="5"
+        [(ngModel)]="jobDescription"
+        placeholder="Enter Job Description"
+      ></textarea>
+    </div>
+
+    <!-- Skills -->
+    <div class="p-field">
+      <label for="skills">Skills (comma separated)</label>
+      <input
+        id="skills"
+        type="text"
+        pInputText
+        [(ngModel)]="skills"
+        placeholder="Enter Skills"
+      />
+    </div>
+
+    <!-- File Upload -->
+    <div class="p-field">
+      <p-fileUpload
+        mode="basic"
+        name="resume"
+        accept=".pdf,.doc,.docx"
+        chooseLabel="Upload Resume"
+        auto="false"
+        customUpload="true"
+        (uploadHandler)="onFileChange($event)"
+      ></p-fileUpload>
+    </div>
+
+    <!-- Button -->
+    <div class="p-field text-center">
+      <button pButton label="Analyze Resume" (click)="analyze()"></button>
+    </div>
+
+  </div>
+
+  <!-- Result -->
+  <div *ngIf="result" class="result-box">
+    <h3>ATS Score: {{ result.ats_score }}%</h3>
+    <p><b>Matched:</b> {{ result.matched_keywords.join(', ') }}</p>
+    <p><b>Missing:</b> {{ result.missing_keywords.join(', ') }}</p>
+  </div>
+
+</div>
