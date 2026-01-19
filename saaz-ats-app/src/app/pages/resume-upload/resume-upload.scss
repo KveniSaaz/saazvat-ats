@@ -1,5 +1,14 @@
+.container{
+    display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh; 
+
+  background: var(--p-surface-50); /* optional */
+  padding: 1rem;
+}
 .resume-checker-container {
-  max-width: 650px;
+  width: 650px;
   margin: 0 auto;
   background: var(--p-surface-0);
   padding: 2rem;
@@ -79,4 +88,20 @@ button.p-button {
     font-weight: 700;
     color: var(--p-primary-color);
   }
+}
+.resume-card {
+  padding: 15px;
+  margin-bottom: 20px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  background: #fafafa;
+}
+
+.resume-card h3 {
+  margin: 0;
+}
+
+ul {
+  margin: 5px 0;
+  padding-left: 20px;
 }

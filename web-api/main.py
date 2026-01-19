@@ -1,17 +1,11 @@
-from fastapi import FastAPI, UploadFile, Form
+from fastapi import FastAPI, UploadFile, Form, File
+from typing import List
 from extract_text import extract_resume_text
 from keyword_match import compare_keywords
 from fastapi.middleware.cors import CORSMiddleware
 
-
 app = FastAPI()
 
-# Allow your Angular frontend to call the backend
-origins = [
-    "http://localhost:4200",   # Angular local
-    
-    "*"  # Allow all origins (not recommended in production)
-]
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -20,13 +14,38 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
 @app.post("/analyze")
-async def analyze_resume(
+def analyze_resume_folder(
     jd: str = Form(...),
     skills: str = Form(""),
-    resume: UploadFile = None
+    resumes: List[UploadFile] = File(...)
 ):
-    resume_text = extract_resume_text(resume)
-    result = compare_keywords(jd, skills, resume_text)
-    return result
+    results = []
+
+    for resume in resumes:
+        filename = resume.filename.lower()
+
+        if filename.endswith(".pdf"):
+            file_type = "PDF"
+        elif filename.endswith(".docx"):
+            file_type = "WORD"
+        else:
+            results.append({
+                "filename": resume.filename,
+                "error": "Unsupported file type"
+            })
+            continue
+
+        text = extract_resume_text(resume)
+
+        analysis = compare_keywords(jd, skills, text)
+
+        results.append({
+            "filename": resume.filename,
+            "file_type": file_type,
+            "ats_score": analysis["ats_score"],
+            "matched": analysis["matched_keywords"],
+            "missing": analysis["missing_keywords"]
+        })
+
+    return {"results": results}
