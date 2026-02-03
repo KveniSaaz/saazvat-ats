@@ -1,8 +1,8 @@
 from fastapi import FastAPI, UploadFile, Form, File
 from typing import List
 from extract_text import extract_resume_text
-from keyword_match import compare_keywords
 from fastapi.middleware.cors import CORSMiddleware
+from candidate_parser import extract_candidate_details, calculate_ats_score
 
 app = FastAPI()
 
@@ -23,29 +23,25 @@ def analyze_resume_folder(
     results = []
 
     for resume in resumes:
-        filename = resume.filename.lower()
-
-        if filename.endswith(".pdf"):
-            file_type = "PDF"
-        elif filename.endswith(".docx"):
-            file_type = "WORD"
-        else:
-            results.append({
-                "filename": resume.filename,
-                "error": "Unsupported file type"
-            })
+        # Step 1: Extract Text
+        text = extract_resume_text(resume)
+        
+        if not text:
             continue
 
-        text = extract_resume_text(resume)
+        # Step 2: Extract Personal Basic Details
+        candidate_info = extract_candidate_details(text)
 
-        analysis = compare_keywords(jd, skills, text)
+        # Step 3: Run ATS Scoring
+        score, matched, missing = calculate_ats_score(jd, skills, text)
 
+        # Step 4: Format for Frontend (Angular/PrimeNG)
         results.append({
             "filename": resume.filename,
-            "file_type": file_type,
-            "ats_score": analysis["ats_score"],
-            "matched": analysis["matched_keywords"],
-            "missing": analysis["missing_keywords"]
+            "candidate": candidate_info,
+            "ats_score": score,
+            "matched": matched[:15], # Show top 15 skills
+            "missing": missing[:15]
         })
 
     return {"results": results}

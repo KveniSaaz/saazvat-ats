@@ -10,6 +10,10 @@ import { TextareaModule } from 'primeng/textarea';
 import { ResumeUploadService } from '../../services/resume-upload.service';
 import { log } from 'node:console';
 import { AnalyzeResponse, ResumeResult } from '../../models/results';
+import { ChipModule } from 'primeng/chip';
+import { TableModule } from 'primeng/table';
+import { PaginatorModule } from 'primeng/paginator';
+import { TagModule } from 'primeng/tag';
 
 @Component({
   selector: 'app-resume-upload',
@@ -20,6 +24,10 @@ import { AnalyzeResponse, ResumeResult } from '../../models/results';
     FileUploadModule,
     TextareaModule,
     InputTextModule,
+    ChipModule,
+    TableModule,
+    PaginatorModule,
+    TagModule
   ],
   templateUrl: './resume-upload.html',
   styleUrl: './resume-upload.scss',
@@ -68,11 +76,15 @@ const files: File[] = event.currentFiles;
 
 this.resumeService
   .uploadResumes(this.jobDescription, this.skills, this.selectedFiles)
-  .subscribe((res: AnalyzeResponse) => {
-    this.result = res.results;
-    console.log("Analysis result:", this.result);
-  });
+  .subscribe({
+      next: (res) => {
+        this.result = res.results;
+        console.log("Extracted Data:", this.result);
+      },
+      error: (err) => {
+        console.error("Analysis failed", err);
+      }
+    });
 
 }
-
 }

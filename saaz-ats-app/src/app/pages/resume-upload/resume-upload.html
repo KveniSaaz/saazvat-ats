@@ -6,13 +6,8 @@
       <!-- Job Description -->
       <div class="p-field">
         <label for="jd">Job Description</label>
-        <textarea
-          id="jd"
-          pInputTextarea
-          rows="5"
-          [(ngModel)]="jobDescription"
-          placeholder="Enter Job Description"
-        ></textarea>
+        <textarea id="jd" pInputTextarea rows="5" [(ngModel)]="jobDescription"
+          placeholder="Enter Job Description"></textarea>
       </div>
 
       <!-- Skills -->
@@ -23,13 +18,8 @@
 
       <!-- File Upload -->
       <div class="p-field">
-        <p-fileUpload
-          mode="basic"
-          chooseLabel="Upload Resumes"
-          [multiple]="true"
-          accept=".pdf,.doc,.docx"
-          (onSelect)="onSelectFiles($event)"
-        ></p-fileUpload>
+        <p-fileUpload mode="basic" chooseLabel="Upload Resumes" [multiple]="true" accept=".pdf,.doc,.docx"
+          (onSelect)="onSelectFiles($event)"></p-fileUpload>
       </div>
 
       <!-- Button -->
@@ -39,16 +29,41 @@
     </div>
 
     <!-- Result -->
-   <div *ngIf="result">
-  <h2>Analysis Results</h2>
+    <div *ngIf="result">
+      <h2>Analysis Results</h2>
 
-  <div *ngFor="let r of result" class="resume-card">
+      <div class="card mt-4" *ngIf="result.length > 0">
+        <p-table [value]="result" [rows]="5" [paginator]="true" responsiveLayout="scroll">
+          <ng-template pTemplate="header">
+            <tr>
+              <th>Candidate Name</th>
+              <th>Contact Details</th>
+              <th>Location</th>
+              <th>ATS Score</th>
+              <th>Matched Skills</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-res>
+            <tr>
+              <td><strong>{{ res.candidate.name }}</strong></td>
+              <td>
+                <div><i class="pi pi-envelope"></i> {{ res.candidate.emailId }}</div>
+                <div><i class="pi pi-phone"></i> {{ res.candidate.mobileNo }}</div>
+              </td>
+              <td>{{ res.candidate.nativePlace }}</td>
+              <td>
+                <p-tag [value]="res.ats_score + '%'" [severity]="res.ats_score > 70 ? 'success' : 'warn'">
+                </p-tag>
+              </td>
+              <td>
+                <div class="flex gap-1">
+                  <p-chip *ngFor="let s of res.matched.slice(0,3)" [label]="s"></p-chip>
+                </div>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
 
-    <h3>{{ r.filename }} ({{ r.file_type }})</h3>
-    <p><b>ATS Score:</b> {{ r.ats_score }}%</p>
-
-  
-</div>
-
+    </div>
   </div>
-</div>
