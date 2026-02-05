@@ -6,3 +6,5 @@ spacy
 openai
 pydantic
 python-multipart
+python-dateutil
+geopy
